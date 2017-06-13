@@ -1,13 +1,7 @@
-#include <Servo.h>
-
 unsigned long echo = 0;
 int ultraSoundSignal = 9; // Ultrasound signal pin
-int servoPort = 10;
 unsigned long ultrasoundValue = 0;
 int distanceThreshold = 100; //in cm
-boolean braking = false;
-
-Servo myservo;
 
 void setup() {
   Serial.begin(9600);
@@ -15,36 +9,22 @@ void setup() {
 }
 
 void loop() {
+  delay(250); //delay 1/4 seconds.
   int currentDistance = ping();
-  Serial.println("distance: " + String(currentDistance));
-  if(currentDistance < distanceThreshold && currentDistance != 0) {
+  Serial.println(currentDistance);
+  if(currentDistance < distanceThreshold) {
     brake();
   } else {
     cancelBrake();
   }
-  delay(1000);
 }
 
 void brake() {
-  if(!braking) {
-    myservo.attach(servoPort);
-    myservo.write(180);
-    delay(500);
-    myservo.detach();
-    braking = true;
-  }
   playBrakeSound();
   Serial.println("Remmen!");
 }
 
 void cancelBrake() {
-  if(braking) {
-    myservo.attach(servoPort);
-    myservo.write(0);
-    delay(500);
-    myservo.detach();
-    braking = false;
-  }
   Serial.println("Racen!");
 }
 
