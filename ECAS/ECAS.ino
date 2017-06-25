@@ -3,22 +3,30 @@
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
 
+//set reusable variables
 boolean braking = false;
 
+//set ultrasonic variables
 unsigned long echo = 0;
 int ultraSoundSignal = 9; // Ultrasound signal pin
 unsigned long ultrasoundValue = 0;
 int distanceThreshold = 100; //in cm
+
+//set servo variables
 int servoPort = 8;
 
+//set mp3player variables
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
 Servo myservo;
 
 void setup() {
+  //start the serials
   mySoftwareSerial.begin(9600);
   Serial.begin(9600);
+
+  //set pinmode for ultrasonic
   pinMode(ultraSoundSignal,OUTPUT);
 
   Serial.println();
