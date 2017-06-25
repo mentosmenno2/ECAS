@@ -24,7 +24,8 @@ void setup() {
   Serial.println();
   Serial.println(F("DFRobot DFPlayer Mini Demo"));
   Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
-  
+
+  //wait for player to boot
   if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
     Serial.println(F("Unable to begin:"));
     Serial.println(F("1.Please recheck the connection!"));
@@ -37,9 +38,9 @@ void setup() {
 }
 
 void loop() {
-  int currentDistance = ping();
+  int currentDistance = ping(); //read distance
   Serial.println("distance: " + String(currentDistance));
-  if(currentDistance < distanceThreshold && currentDistance != 0) {
+  if(currentDistance < distanceThreshold && currentDistance != 0) { //if distance is valid, and an object is detected, brake.
     brake();
   } else {
     cancelBrake();
@@ -49,11 +50,13 @@ void loop() {
 
 void brake() {
   if(!braking) {
+    // move the brakes to braking position
     myservo.attach(servoPort);
     myservo.write(180);
     delay(500);
     myservo.detach();
     braking = true;
+    //play sound
     playBrakeSound();
   }
   Serial.println("Remmen!");
@@ -61,6 +64,7 @@ void brake() {
 
 void cancelBrake() {
   if(braking) {
+    // move the brakes to standard position
     myservo.attach(servoPort);
     myservo.write(0);
     delay(500);
