@@ -38,6 +38,11 @@ void setup()
   }
 
   delay(5000);
+  myservo.attach(servoPort);
+  myservo.write(0);
+  delay(500);
+  myservo.detach();
+  
   Serial.println(F("DFPlayer Mini online."));
   myDFPlayer.volume(25);  //Set volume value. From 0 to 30
   myDFPlayer.play(1);  //Play the first mp3
@@ -45,7 +50,7 @@ void setup()
 
 void loop()
 {
-  delay(200);
+  delay(100);
   
   int currentDistance = ping(); //read distance
   Serial.println("distance: " + String(currentDistance));
