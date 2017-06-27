@@ -13,47 +13,50 @@ unsigned long ultrasoundValue = 0;
 int distanceThreshold = 100; //in cm
 
 //set servo variables
-int servoPort = 8;
+int servoPort = 3;
+Servo myservo;
 
 //set mp3player variables
 SoftwareSerial mySoftwareSerial(10, 11); // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
+void printDetail(uint8_t type, int value);
 
-Servo myservo;
-
-void setup() {
-  //start the serials
+void setup()
+{
   mySoftwareSerial.begin(9600);
-  Serial.begin(9600);
-
-  //set pinmode for ultrasonic
-  pinMode(ultraSoundSignal,OUTPUT);
-
+  Serial.begin(115200);
+  
   Serial.println();
   Serial.println(F("DFRobot DFPlayer Mini Demo"));
   Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
-
-  //wait for player to boot
+  
   if (!myDFPlayer.begin(mySoftwareSerial)) {  //Use softwareSerial to communicate with mp3.
     Serial.println(F("Unable to begin:"));
     Serial.println(F("1.Please recheck the connection!"));
     Serial.println(F("2.Please insert the SD card!"));
     while(true);
   }
+
+  delay(5000);
   Serial.println(F("DFPlayer Mini online."));
-  
-  myDFPlayer.volume(10);  //Set volume value. From 0 to 30
+  myDFPlayer.volume(25);  //Set volume value. From 0 to 30
+  myDFPlayer.play(1);  //Play the first mp3
 }
 
-void loop() {
+void loop()
+{
+  delay(200);
+  
   int currentDistance = ping(); //read distance
   Serial.println("distance: " + String(currentDistance));
-  if(currentDistance < distanceThreshold && currentDistance != 0) { //if distance is valid, and an object is detected, brake.
+  if(currentDistance == 0) {
+    return;
+  }
+  if(currentDistance < distanceThreshold) { //if distance is valid, and an object is detected, brake.
     brake();
   } else {
     cancelBrake();
   }
-  delay(1000);
 }
 
 void brake() {
@@ -64,10 +67,10 @@ void brake() {
     delay(500);
     myservo.detach();
     braking = true;
+    Serial.println("Remmen!");
     //play sound
     playBrakeSound();
   }
-  Serial.println("Remmen!");
 }
 
 void cancelBrake() {
@@ -78,12 +81,12 @@ void cancelBrake() {
     delay(500);
     myservo.detach();
     braking = false;
+    Serial.println("Racen!");
   }
-  Serial.println("Racen!");
 }
 
 void playBrakeSound() {
-  myDFPlayer.play(1);  //Play the first mp3
+  myDFPlayer.next();  //Play the first mp3
   if (myDFPlayer.available()) {
     printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
   }
